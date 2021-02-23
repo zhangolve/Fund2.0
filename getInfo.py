@@ -84,11 +84,15 @@ def getGegu(gu_code):
 
 # res {'fundcode': '003095', 'name': '中欧医疗健康混合A', 'jzrq': '2020-12-17', 'dwjz': '3.2840', 'gsz': '3.2822', 'gszzl': '-0.06', 'gztime': '2020-12-18 15:00'}
 def getJijin(ji_code):
+
     jijin_gu = requests.get('http://fundgz.1234567.com.cn/js/' + ji_code + '.js?rt=1463558676006')
     jijin_jin = requests.get('http://hq.sinajs.cn/list=f_'+ji_code)
     status = jijin_gu.status_code
     if status != 200:
-        return False
-    jijin_info = json.loads(jijin_gu.text[8:-2])
+        return False, False
+    jijin_gu_json  =  jijin_gu.text[8:-2]
+    if not jijin_gu_json:
+        return False, False
+    jijin_info = json.loads(jijin_gu_json)
     return jijin_info, jijin_jin.text
 
