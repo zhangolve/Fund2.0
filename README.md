@@ -4,6 +4,10 @@
 ### 环境准备：
 运行环境：Python3 
 所需的软件包：requests prettytable colorama
+
+pip freeze > requirements.txt
+
+
 ### 基金自选
 修改my_jijin.txt文本文件，每行都是一个您关注的基金代码
 ### 启动方式：python3 main.py
