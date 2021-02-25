@@ -23,6 +23,7 @@ RUN touch /var/log/cron.log
 RUN apt-get update
 RUN apt-get -y install cron
 
-
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Run the command on container startup
 CMD cron && tail -f /var/log/cron.log

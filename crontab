@@ -1,4 +1,4 @@
-* * * * * root  /usr/src/app/run.sh >/var/log/cron.log  2>&1
-* * * * * root echo "Hello world" >> /var/log/cron.log 2>&1
+42 5 * * * root  /usr/src/app/run.sh >/var/log/cron.log  2>&1
+# * 21 * * * root echo "Hello world" >> /var/log/cron.log 2>&1
 # * * * * * echo 'hello world' > '/usr/src/app/abc.txt'
 # Don't remove the empty line at the end of this file. It is required to run the cron job
