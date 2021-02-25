@@ -95,4 +95,3 @@ def getJijin(ji_code):
         return False, False
     jijin_info = json.loads(jijin_gu_json)
     return jijin_info, jijin_jin.text
-
