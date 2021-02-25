@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+
 import pymysql
 from flask import Flask, render_template, url_for, request, json, jsonify
 import json

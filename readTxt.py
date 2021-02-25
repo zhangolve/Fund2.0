@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+
 # 读取my.txt内容
 class GetData():
     def getJjCode(self):

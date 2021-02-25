@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+
 
 # 主程序入口
 from getInfo import getGegu, getJijin
