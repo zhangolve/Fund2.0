@@ -34,9 +34,15 @@ def get_single_monthly_report(jjcode, name):
     first_day_value= float(first_day.get('DWJZ'))
     last_day_day = last_day.get('FSRQ')
     last_day_value = float(last_day.get('DWJZ'))
+    pre_day = LSJZList[1]
+    pre_day_day = pre_day.get('FSRQ')
+    pre_day_value = float(pre_day.get('DWJZ'))
+    pre_diff = round(first_day_value-pre_day_value, 4)
+    pre_zhangfu = round(pre_diff/pre_day_value, 4)
     diff = round(first_day_value-last_day_value, 4)
     monthly_zhangfu = round(diff/last_day_value, 4) 
-    content = name + jjcode_value + '\n' + first_day_day + ':'+ str(first_day_value) + '\n' + last_day_day + ':'+ str(last_day_value) + '\n' + '20个交易日共收益' + str(monthly_zhangfu)
+    pre_diff_info = '今日涨幅:' + str(pre_zhangfu);
+    content = name + jjcode_value + '\n' + first_day_day + ':'+ str(first_day_value) + '\n' + last_day_day + ':'+ str(last_day_value) + '\n' + pre_diff_info + '\n' +  '20个交易日共收益' + str(monthly_zhangfu)
     return content
    
 
