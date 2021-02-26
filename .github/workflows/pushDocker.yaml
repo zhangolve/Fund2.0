@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           tags: zhangolve/my-fund-report:main
-          platform: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6,linux/arm/v8,x86_64,
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6,linux/arm/v8,x86_64
           file: Dockerfile
           push: true
       -
