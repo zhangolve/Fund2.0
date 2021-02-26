@@ -27,6 +27,7 @@ jobs:
         with:
           tags: zhangolve/my-fund-report:main
           file: Dockerfile
+          platforms: linux/amd64,linux/arm/v8
           push: true
       -
         name: Image digest
