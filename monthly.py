@@ -64,7 +64,5 @@ def get_monthly_report():
     mailsender.send_it()
 
 
-# this is a test
-
 get_monthly_report()
 
