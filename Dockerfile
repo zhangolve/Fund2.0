@@ -1,4 +1,4 @@
-FROM python:3
+FROM arm64v8/python:3
 MAINTAINER zhangolve@gmail.com
 
 WORKDIR /usr/src/app
