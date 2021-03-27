@@ -1,3 +1,4 @@
 stock_ticker,stock_name,curr_price,pred_low,pred_avg,pred_high,# of Analyst,% low/curr,% avg/curr,% high/curr
+AAPL,Apple,121.21,80.0,150.65,175.0,25,-34.0,24.29,44.38
 MSFT,Microsoft,236.48,245.0,282.57,315.0,23,3.6,19.49,33.2
 AMZN,Amazon,3052.03,3700.0,4106.14,5200.0,31,21.23,34.54,70.38

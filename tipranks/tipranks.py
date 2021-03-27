@@ -9,6 +9,14 @@ import sys
 
 import logging.handlers
 import datetime
+from mail_sender import MailSender
+
+
+my_sender = '1262010981@qq.com'
+my_pass = 'nrrejsviolzpjchd'
+receiver_addr = ['zhangolve@gmail.com']
+sender_name = 'FundCalculator'
+
 logger = logging.getLogger('mylogger')
 logger.setLevel(logging.DEBUG)
 
@@ -108,41 +116,60 @@ def init():
             info = companyName + 'created'
             logger.info(info)
             time.sleep(3)
-
-    #Temporarily save after every 20 stocks
-        # if count%20 == 0:
-        #     df = pd.DataFrame()
-        #     df['stock_ticker'] = stock_ticker
-        #     df['stock_name'] = stock_name
-        #     df['curr_price'] = curr_price
-        #     df['pred_low'] = pred_low
-        #     df['pred_avg'] = pred_avg
-        #     df['pred_high'] = pred_high
-        #     df['# of Analyst'] = num_analyst
-        #     df['% low/curr'] = [get_gain(x,y) for x,y in zip(pred_low,curr_price)]
-        #     df['% avg/curr'] = [get_gain(x,y) for x,y in zip(pred_avg,curr_price)]
-        #     df['% high/curr'] = [get_gain(x,y) for x,y in zip(pred_high,curr_price)]
-        #     df.to_csv('Stocks_TipRank_partA_800.csv', index=None)
+    
+    #Temporarily save after every 10 stocks
+        if count%10 == 0:
+            df = pd.DataFrame()
+            df['stock_ticker'] = stock_ticker
+            df['stock_name'] = stock_name
+            df['curr_price'] = curr_price
+            df['pred_low'] = pred_low
+            df['pred_avg'] = pred_avg
+            df['pred_high'] = pred_high
+            df['# of Analyst'] = num_analyst
+            df['% low/curr'] = [get_gain(x,y) for x,y in zip(pred_low,curr_price)]
+            df['% avg/curr'] = [get_gain(x,y) for x,y in zip(pred_avg,curr_price)]
+            df['% high/curr'] = [get_gain(x,y) for x,y in zip(pred_high,curr_price)]
+            df.to_csv('Stocks_TipRank_partA_800.csv', index=None)
         #Last save
-        df = pd.DataFrame()
-        df['stock_ticker'] = stock_ticker
-        df['stock_name'] = stock_name
-        df['curr_price'] = curr_price
-        df['pred_low'] = pred_low
-        df['pred_avg'] = pred_avg
-        df['pred_high'] = pred_high
-        df['# of Analyst'] = num_analyst
-        df['% low/curr'] = [get_gain(x,y) for x,y in zip(pred_low,curr_price)]
-        df['% avg/curr'] = [get_gain(x,y) for x,y in zip(pred_avg,curr_price)]
-        df['% high/curr'] = [get_gain(x,y) for x,y in zip(pred_high,curr_price)]
-        df.to_csv('Stocks_TipRank_partA_800.csv', index=None)
+    df = pd.DataFrame()
+    df['stock_ticker'] = stock_ticker
+    df['stock_name'] = stock_name
+    df['curr_price'] = curr_price
+    df['pred_low'] = pred_low
+    df['pred_avg'] = pred_avg
+    df['pred_high'] = pred_high
+    df['# of Analyst'] = num_analyst
+    df['% low/curr'] = [get_gain(x,y) for x,y in zip(pred_low,curr_price)]
+    df['% avg/curr'] = [get_gain(x,y) for x,y in zip(pred_avg,curr_price)]
+    df['% high/curr'] = [get_gain(x,y) for x,y in zip(pred_high,curr_price)]
+    if os.path.exists('./Stocks_TipRank_partA_800.csv'):
+        attachment = './Stocks_TipRank_partA_800.csv'
+        content = 'ripranks'
+        now = datetime.datetime.now()
+        subject = 'tipranks result ' + now.strftime("%Y-%m-%d %H:%M:%S")
+        mailsender = MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, attachment)
+        mailsender.send_it()
 
 
-# TODD: get full russel 3000 according to api
+exec_count = 0
+def exec():
+    global exec_count
+    exec_count += exec_count
+    if exec_count < 100:  
+        try: 
+            init()
+        except Exception as ex:
+            print(ex)
+            logger.error(ex)
+            time.sleep(60)
+            exec()
+    else: 
+        now = datetime.datetime.now()
+        subject = 'tipranks exeception ' + now.strftime("%Y-%m-%d %H:%M:%S")
+        attachment = './error.log'
+        content="got exeception"
+        mailsender = MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, attachment)
+        mailsender.send_it()
 
-try: 
-    init()
-except Exception as ex:
-    print(ex)
-    print(ex)
-    logger.error(ex)
+exec()
