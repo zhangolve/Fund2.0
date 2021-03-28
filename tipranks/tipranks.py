@@ -37,13 +37,6 @@ stock_list = pd.read_csv('Russell3000stocks.csv')
 
 stocks = stock_list['Ticker']
 
-stock_ticker = []
-stock_name = []
-curr_price = []
-pred_low = []
-pred_avg = []
-pred_high = []
-num_analyst = []
 count = 0
 
 def get_now_timestamp():
@@ -54,10 +47,15 @@ def get_now_timestamp():
 def get_one_stock_data(ticker):
     timestamp = get_now_timestamp()
     url = 'https://www.tipranks.com/api/stocks/getData/?name='+ticker+'&benchmark=1&period=3&break='+timestamp
-    stock_data_json = requests.get(url)
+    stock_data_json = requests.get(url, timeout=(5, 27))
     status = stock_data_json.status_code
     if status != 200:
-        logger.error('stock data request failed')
+        logger.error(stock_data_json)
+        logger.error(ticker)
+        if status == 404:
+            return False
+        else:
+            raise Exception('stock data request failed')
     stock_data_json = json.loads(stock_data_json.text) 
     return stock_data_json
 
@@ -65,10 +63,16 @@ def get_one_stock_data(ticker):
 def get_curr_price(ticker):
     timestamp = get_now_timestamp()
     url = 'https://market.tipranks.com/api/details/getstockdetailsasync/?break='+timestamp + '&id='+ticker
-    ticker_detail_json = requests.get(url)
+    ticker_detail_json = requests.get(url, timeout=(5, 27))
     status = ticker_detail_json.status_code
     if status != 200:
-        logger.error('request failed')
+        logger.error(ticker_detail_json)
+        logger.error(ticker)
+        # Todo: 404 handle
+        if status == 404:
+            return False
+        else:
+            raise Exception('request failed')
     ticker_detail = json.loads(ticker_detail_json.text)
     curr_price = ticker_detail[0].get('price')
     return curr_price
@@ -76,6 +80,8 @@ def get_curr_price(ticker):
 
 def get_target_price(ticker):
     stock_data = get_one_stock_data(ticker)
+    if not stock_data:
+        return False
     ptConsensus = stock_data.get('ptConsensus')
     companyName = stock_data.get('companyName')
     [high, low, priceTarget]=[None, None, None]
@@ -103,46 +109,45 @@ def init():
             existing_ticker.append(t)
     for ticker in stocks:
         if ticker not in existing_ticker:
+            logger.info('start fech data:')
+            logger.info(ticker)
+            stock_ticker = []
+            stock_name = []
+            curr_price = []
+            pred_low = []
+            pred_avg = []
+            pred_high = []
+            num_analyst = []
             s_curr_price = get_curr_price(ticker)
+            if not s_curr_price:
+                continue
             data = get_target_price(ticker)
+            if not data:
+                continue
             [companyName, high, low, priceTarget, s_num_analyst] = data
-            curr_price.append(s_curr_price)
-            pred_low.append(low)
-            pred_high.append(high)
-            num_analyst.append(s_num_analyst)
-            pred_avg.append(priceTarget)
-            stock_ticker.append(ticker)
-            stock_name.append(companyName)
-            info = companyName + 'created'
-            logger.info(info)
-            time.sleep(3)
-    
-    #Temporarily save after every 10 stocks
-        if count%10 == 0:
-            df = pd.DataFrame()
-            df['stock_ticker'] = stock_ticker
-            df['stock_name'] = stock_name
-            df['curr_price'] = curr_price
-            df['pred_low'] = pred_low
-            df['pred_avg'] = pred_avg
-            df['pred_high'] = pred_high
-            df['# of Analyst'] = num_analyst
-            df['% low/curr'] = [get_gain(x,y) for x,y in zip(pred_low,curr_price)]
-            df['% avg/curr'] = [get_gain(x,y) for x,y in zip(pred_avg,curr_price)]
-            df['% high/curr'] = [get_gain(x,y) for x,y in zip(pred_high,curr_price)]
-            df.to_csv('Stocks_TipRank_partA_800.csv', index=None)
-        #Last save
-    df = pd.DataFrame()
-    df['stock_ticker'] = stock_ticker
-    df['stock_name'] = stock_name
-    df['curr_price'] = curr_price
-    df['pred_low'] = pred_low
-    df['pred_avg'] = pred_avg
-    df['pred_high'] = pred_high
-    df['# of Analyst'] = num_analyst
-    df['% low/curr'] = [get_gain(x,y) for x,y in zip(pred_low,curr_price)]
-    df['% avg/curr'] = [get_gain(x,y) for x,y in zip(pred_avg,curr_price)]
-    df['% high/curr'] = [get_gain(x,y) for x,y in zip(pred_high,curr_price)]
+            if s_num_analyst and priceTarget and low and high:
+                curr_price.append(s_curr_price)
+                pred_low.append(low)
+                pred_high.append(high)
+                num_analyst.append(s_num_analyst)
+                pred_avg.append(priceTarget)
+                stock_ticker.append(ticker)
+                stock_name.append(companyName)
+                info = companyName + ' created'
+                logger.info(info)
+                df = pd.DataFrame()
+                df['stock_ticker'] = stock_ticker
+                df['stock_name'] = stock_name
+                df['curr_price'] = curr_price
+                df['pred_low'] = pred_low
+                df['pred_avg'] = pred_avg
+                df['pred_high'] = pred_high
+                df['# of Analyst'] = num_analyst
+                df['% low/curr'] = [get_gain(x,y) for x,y in zip(pred_low,curr_price)]
+                df['% avg/curr'] = [get_gain(x,y) for x,y in zip(pred_avg,curr_price)]
+                df['% high/curr'] = [get_gain(x,y) for x,y in zip(pred_high,curr_price)]
+                df.to_csv('Stocks_TipRank_partA_800.csv', index=None, mode='a+', header=False)
+       
     if os.path.exists('./Stocks_TipRank_partA_800.csv'):
         attachment = './Stocks_TipRank_partA_800.csv'
         content = 'ripranks'
