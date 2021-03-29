@@ -33,16 +33,35 @@ logger.addHandler(f_handler)
 
 #Importing a list of stock tickers
 pwd = os.getcwd()
-stock_list = pd.read_csv('Russell3000stocks.csv')
+stock_list = pd.read_csv('all_index.csv')
 
 stocks = stock_list['Ticker']
 
-count = 0
+now = datetime.datetime.now()
+result_csv = 'picked_stocks-' + now.strftime("%Y-%m-%d") + '.csv'
+
+
+def init_result_csv():
+    if not os.path.exists(result_csv):
+        df = pd.DataFrame()
+        df['stock_ticker'] = []
+        df['stock_name'] = []
+        df['curr_price'] = []
+        df['pred_low'] = []
+        df['pred_avg'] = []
+        df['pred_high'] = []
+        df['# of Analyst'] = []
+        df['% low/curr'] = []
+        df['% avg/curr'] = []
+        df['% high/curr'] = []
+        df.to_csv(result_csv, index=None, mode='w')
+
 
 def get_now_timestamp():
     now = datetime.datetime.now() # 获取当前datetime
     timestamp = str(int(now.timestamp() * 1000 ))
     return timestamp
+
 
 def get_one_stock_data(ticker):
     timestamp = get_now_timestamp()
@@ -102,8 +121,9 @@ def get_gain(x,y):
 
 def init():
     existing_ticker = []
-    if os.path.exists('Stocks_TipRank_partA_800.csv'):
-        existing_stock_list = pd.read_csv('Stocks_TipRank_partA_800.csv')
+    init_result_csv()
+    if os.path.exists(result_csv):
+        existing_stock_list = pd.read_csv(result_csv)
         existing_ticker_series = existing_stock_list['stock_ticker']
         for t in existing_ticker_series:
             existing_ticker.append(t)
@@ -146,10 +166,10 @@ def init():
                 df['% low/curr'] = [get_gain(x,y) for x,y in zip(pred_low,curr_price)]
                 df['% avg/curr'] = [get_gain(x,y) for x,y in zip(pred_avg,curr_price)]
                 df['% high/curr'] = [get_gain(x,y) for x,y in zip(pred_high,curr_price)]
-                df.to_csv('Stocks_TipRank_partA_800.csv', index=None, mode='a+', header=False)
+                df.to_csv(result_csv, index=None, mode='a+', header=False)
        
-    if os.path.exists('./Stocks_TipRank_partA_800.csv'):
-        attachment = './Stocks_TipRank_partA_800.csv'
+    if os.path.exists(result_csv):
+        attachment = result_csv
         content = 'ripranks'
         now = datetime.datetime.now()
         subject = 'tipranks result ' + now.strftime("%Y-%m-%d %H:%M:%S")
@@ -167,7 +187,7 @@ def exec():
         except Exception as ex:
             print(ex)
             logger.error(ex)
-            time.sleep(60)
+            time.sleep(5)
             exec()
     else: 
         now = datetime.datetime.now()
