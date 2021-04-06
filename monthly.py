@@ -45,7 +45,7 @@ def today_ma(LSJZList_list):
     ma_10 = get_ma(LSJZList_list[0:10])
     ma_20 = get_ma(LSJZList_list)
     diff = round(ma_10-ma_20,2)
-    diff_percent = round(diff/ma_20, 2)
+    diff_percent = round(diff/ma_20, 4)
     if diff >0:
         info = '可买'
     else:
