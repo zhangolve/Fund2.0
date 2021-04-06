@@ -10,6 +10,8 @@ from readTxt import GetData
 from plot import write_plot
 import datetime
 import os
+from functools import reduce
+
 
 now = datetime.datetime.now()
 
@@ -30,6 +32,27 @@ def get_zhangfu_list(LSJZList):
     last_day_value = day_values[-1]
     zhangfu_list = list(map(lambda x: get_zhangfu(x, last_day_value), day_values))
     return zhangfu_list
+
+
+def get_ma(LSJZList):
+    jz_list = list(map(lambda x: float(x.get('DWJZ')), LSJZList))
+    sum = reduce(lambda x, y: x+y, jz_list) 
+    ma = round(sum/len(LSJZList), 2)
+    return ma
+
+
+def today_ma(LSJZList_list):
+    ma_10 = get_ma(LSJZList_list[0:10])
+    ma_20 = get_ma(LSJZList_list)
+    diff = round(ma_10-ma_20,2)
+    diff_percent = round(diff/ma_20, 2)
+    if diff >0:
+        info = '可买'
+    else:
+        info = '可卖'
+    info = info + '净值差' + 'diff' + '比例差' +  str(diff_percent)
+    today_ma_info = '今日' 'ma10:' + str(ma_10) + '  ma20:' + str(ma_20) + info  
+    return today_ma_info
 
 
 def get_single_monthly_report(jjcode, name): 
@@ -54,7 +77,9 @@ def get_single_monthly_report(jjcode, name):
     pre_zhangfu = get_zhangfu(first_day_value, pre_day_value)
     monthly_zhangfu = get_zhangfu(first_day_value, last_day_value) 
     pre_diff_info = '今日涨幅:' + str(pre_zhangfu);
-    content = name + jjcode_value + '\n' + first_day_day + ':'+ str(first_day_value) + '\n' + last_day_day + ':'+ str(last_day_value) + '\n' + pre_diff_info + '\n' +  '20个交易日共收益' + str(monthly_zhangfu)
+    LSJZList_list = [*LSJZList]
+    today_ma_info = today_ma(LSJZList_list)
+    content = name + jjcode_value + '\n' + first_day_day + ':'+ str(first_day_value) + '\n' + last_day_day + ':'+ str(last_day_value) + '\n' + pre_diff_info + '\n' +  '20个交易日共收益' + str(monthly_zhangfu) + '\n' + today_ma_info
     return content, get_zhangfu_list(LSJZList)
    
 
