@@ -5,6 +5,7 @@
 import yfinance as yf
 import pandas as pd
 from functools import reduce
+import time
 
 
 # 回归
@@ -40,20 +41,25 @@ def regression(ticker):
         # 比照ma5，ma10 vs ma10 vs ma20 哪个更合适
 
 def find_ma(ticker):
-    stock = yf.Ticker(ticker)
-    hist = stock.history(period="25d")
-    closed_values = []
-    for row in hist.iterrows():
-        closed_values.append(row[1].get('Close'))
-    ma_diff_arr = get_ma_diff_arr(closed_values)
-    return not any(ma_diff_arr[0:2]) and all(ma_diff_arr[-2:])
+    try:
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period="25d")
+    except Exception as ex:
+        time.sleep(5)
+        return find_ma(ticker)
+    else:
+        closed_values = []
+        for row in hist.iterrows():
+            closed_values.append(row[1].get('Close'))
+        ma_diff_arr = get_ma_diff_arr(closed_values)
+        return not any(ma_diff_arr[0:2]) and all(ma_diff_arr[-2:])
 
 
 def find_all_ma():
     stock_list = pd.read_csv('../tipranks/all_index.csv')
     stocks = stock_list['Ticker']
     filtered_stocks = []
-    for ticker in stocks:
+    for ticker in stocks:        
         if find_ma(ticker):
             print(filtered_stocks)
             filtered_stocks.append(ticker)
@@ -62,3 +68,6 @@ def find_all_ma():
 
 find_all_ma()
 # period="1mo"
+
+# ['GOOG', 'GOOGL', 'ISRG', 'ATVI', 'ADSK', 'DXCM', 'FOX', 'BRK.B', 'MDT', 'NEE', 'ORCL', 'NOW', 'SYK', 'ETN', 'ECL', 'AON', 'EW', 'EOG', 'WMB', 'WY', 'CBRE', 'VFC', 'ZBRA', 'OKE', 'IP', 'DRI', 'HES', 'AMCR', 'NVR', 'STX', 'WRK', 'BF.B', 'PWR', 'CMA', 'COG', 'X9USDMORS']
+# 

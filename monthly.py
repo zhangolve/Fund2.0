@@ -41,15 +41,29 @@ def get_ma(LSJZList):
     return ma
 
 
+def get_ma_diff_arr(LSJZList_list):
+    diff_bools = []
+    index = 0
+    diff_range = len(LSJZList_list[19:])
+    for i in range(0, diff_range):
+        ma_20 = get_ma(LSJZList_list[i: 20+i])
+        ma_10 = get_ma(LSJZList_list[i: 10+i])
+        diff_bools.append(ma_10-ma_20>0)
+    return diff_bools
+
+
 def today_ma(LSJZList_list):
     ma_10 = get_ma(LSJZList_list[0:10])
-    ma_20 = get_ma(LSJZList_list)
+    ma_20 = get_ma(LSJZList_list[0:20])
     diff = round(ma_10-ma_20,2)
     diff_percent = round(diff/ma_20, 4)
-    if diff >0:
+    ma_diff_arr = get_ma_diff_arr(LSJZList_list)
+    if all(ma_diff_arr[0:2]) and not any(ma_diff_arr[-2:]):
         info = '可买'
-    else:
+    elif not any(ma_diff_arr[0:2]) and  all(ma_diff_arr[-2:]):
         info = '可卖'
+    else:
+        info = '保持'+str(ma_diff_arr)
     info = info + '净值差' + 'diff' + '比例差' +  str(diff_percent)
     today_ma_info = '今日' 'ma10:' + str(ma_10) + '  ma20:' + str(ma_20) + info  
     return today_ma_info
@@ -58,13 +72,14 @@ def today_ma(LSJZList_list):
 def get_single_monthly_report(jjcode, name): 
     headers = {'Referer': 'http://fundf10.eastmoney.com/'}
     jjcode_value = jjcode.strip()
-    monthly_data_json = requests.get('http://api.fund.eastmoney.com/f10/lsjz?fundCode='+ jjcode_value + '&pageIndex=1&pageSize=20', headers=headers)
+    monthly_data_json = requests.get('http://api.fund.eastmoney.com/f10/lsjz?fundCode='+ jjcode_value + '&pageIndex=1&pageSize=25', headers=headers)
     status = monthly_data_json.status_code
     if status != 200:
         return False        
     monthly_data = json.loads(monthly_data_json.text)
     data = monthly_data.get('Data')
-    LSJZList = data.get('LSJZList')
+    ALL_LSJZList = data.get('LSJZList')
+    LSJZList = ALL_LSJZList[0:20]
     first_day = LSJZList[0] # DWJZ, FSRQ
     last_day = LSJZList[-1]
     first_day_day = first_day.get('FSRQ')
@@ -78,7 +93,7 @@ def get_single_monthly_report(jjcode, name):
     monthly_zhangfu = get_zhangfu(first_day_value, last_day_value) 
     pre_diff_info = '今日涨幅:' + str(pre_zhangfu);
     LSJZList_list = [*LSJZList]
-    today_ma_info = today_ma(LSJZList_list)
+    today_ma_info = today_ma(ALL_LSJZList)
     content = name + jjcode_value + '\n' + first_day_day + ':'+ str(first_day_value) + '\n' + last_day_day + ':'+ str(last_day_value) + '\n' + pre_diff_info + '\n' +  '20个交易日共收益' + str(monthly_zhangfu) + '\n' + today_ma_info
     return content, get_zhangfu_list(LSJZList)
    
@@ -100,11 +115,11 @@ def get_monthly_report():
         jj_zhangfu_list.append(dict(label=name if name else jjcode, data=zhangfu_list))
     content = '\n\n\n'.join(content)
     attachment = './result.png'
-    # print(content)
+    print(content)
     jj_zhangfu_list.reverse()
     write_plot(jj_zhangfu_list, attachment)
-    mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, attachment)
-    mailsender.send_it()
+    # mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, attachment)
+    # mailsender.send_it()
     if os.path.exists(attachment):
         os.remove(attachment)   
 
