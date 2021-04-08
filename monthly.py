@@ -118,8 +118,8 @@ def get_monthly_report():
     print(content)
     jj_zhangfu_list.reverse()
     write_plot(jj_zhangfu_list, attachment)
-    # mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, attachment)
-    # mailsender.send_it()
+    mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, attachment)
+    mailsender.send_it()
     if os.path.exists(attachment):
         os.remove(attachment)   
 
