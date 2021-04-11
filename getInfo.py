@@ -4,6 +4,8 @@
 # import flask
 import requests
 import json
+from functools import reduce
+
 
 # 查询接口
 def getGegu(gu_code):
@@ -98,3 +100,39 @@ def getJijin(ji_code):
         return False, False
     jijin_info = json.loads(jijin_gu_json)
     return jijin_info, jijin_jin.text
+
+
+
+def get_ma(LSJZList):
+    jz_list = list(map(lambda x: float(x.get('DWJZ')), LSJZList))
+    sum = reduce(lambda x, y: x+y, jz_list) 
+    ma = round(sum/len(LSJZList), 2)
+    return ma
+
+
+def get_ma_diff_arr(LSJZList_list):
+    diff_bools = []
+    index = 0
+    diff_range = len(LSJZList_list[19:])
+    for i in range(0, diff_range):
+        ma_20 = get_ma(LSJZList_list[i: 20+i])
+        ma_10 = get_ma(LSJZList_list[i: 10+i])
+        diff_bools.append(ma_10-ma_20>0)
+    return diff_bools
+
+
+def today_ma(LSJZList_list):
+    ma_10 = get_ma(LSJZList_list[0:10])
+    ma_20 = get_ma(LSJZList_list[0:20])
+    diff = round(ma_10-ma_20,2)
+    diff_percent = round(diff/ma_20, 4)
+    ma_diff_arr = get_ma_diff_arr(LSJZList_list)
+    if all(ma_diff_arr[0:2]) and not any(ma_diff_arr[-2:]):
+        info = '可买'
+    elif not any(ma_diff_arr[0:2]) and  all(ma_diff_arr[-2:]):
+        info = '可卖'
+    else:
+        info = '保持'+str(ma_diff_arr)
+    info = info + '净值差' + 'diff' + '比例差' +  str(diff_percent)
+    today_ma_info = '今日' 'ma10:' + str(ma_10) + '  ma20:' + str(ma_20) + info  
+    return today_ma_info

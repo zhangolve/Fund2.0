@@ -5,3 +5,4 @@ pandas==1.2.2
 matplotlib==3.3.4
 bs4==0.0.1
 yfinance==0.1.59
+demjson==2.2.4

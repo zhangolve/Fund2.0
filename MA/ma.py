@@ -36,9 +36,13 @@ def regression(ticker):
         print(type(row[1]))
         # <class 'pandas.core.series.Series'
         print(row[1].get('Close'))
+        # %
+        # ma
         # 20， 10
         #寻找双均线金叉点位
         # 比照ma5，ma10 vs ma10 vs ma20 哪个更合适
+
+
 
 def find_ma(ticker):
     try:
