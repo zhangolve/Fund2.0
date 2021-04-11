@@ -59,7 +59,6 @@ def init():
         jijin_name = jijin[1]
         if(is_jijin_buy_opportunity(jjcode, jijin_name)):
             can_buy_code_list.append(jjcode)
-        print(can_buy_code_list)
 
     def is_jijin_match(jijin_data):
         jijin_code = jijin_data.split(',')[0]
