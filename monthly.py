@@ -4,8 +4,8 @@
 import requests
 import json
 from mail_sender import MailSender
-from getInfo import getGegu, getJijin, today_ma
-from readTxt import GetData
+from getInfo import getGegu, getJijin, today_ma, today_ma_5
+from readTxt import GetPublicData, GetETFData
 from plot import write_plot
 import datetime
 import os
@@ -63,7 +63,7 @@ def get_single_monthly_report(jjcode, name):
    
 
 def get_monthly_report():
-    d = GetData()
+    d = GetPublicData()
     jjc = d.getJjCode()
     content = []
     jj_zhangfu_list = []
@@ -79,13 +79,13 @@ def get_monthly_report():
         jj_zhangfu_list.append(dict(label=name if name else jjcode, data=zhangfu_list))
     content = '\n\n\n'.join(content)
     attachment = './result.png'
-    print(content)
     jj_zhangfu_list.reverse()
     write_plot(jj_zhangfu_list, attachment)
     mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, attachment)
     mailsender.send_it()
     if os.path.exists(attachment):
-        os.remove(attachment)   
+        os.remove(attachment)
+
 
 get_monthly_report()
 

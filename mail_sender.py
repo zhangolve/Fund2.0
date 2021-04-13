@@ -25,19 +25,20 @@ class MailSender(object):
 		msg['From']=formataddr([self.sender_name,self.my_sender])
 		msg['to']='管理员'  
 		msg['Subject']=self.subject
-		with open(self.attachment, 'rb') as f:
-			# set attachment mime and file name, the image type is png
-			mime = MIMEBase('image', 'png', filename='img1.png')
-			# add required header data:
-			mime.add_header('Content-Disposition', 'attachment', filename='img1.png')
-			mime.add_header('X-Attachment-Id', '0')
-			mime.add_header('Content-ID', '<0>')
-			# read attachment file content into the MIMEBase object
-			mime.set_payload(f.read())
-			# encode with base64
-			encoders.encode_base64(mime)
-			# add MIMEBase object to MIMEMultipart object
-			msg.attach(mime)
+		if self.attachment: 
+			with open(self.attachment, 'rb') as f:
+				# set attachment mime and file name, the image type is png
+				mime = MIMEBase('image', 'png', filename='img1.png')
+				# add required header data:
+				mime.add_header('Content-Disposition', 'attachment', filename='img1.png')
+				mime.add_header('X-Attachment-Id', '0')
+				mime.add_header('Content-ID', '<0>')
+				# read attachment file content into the MIMEBase object
+				mime.set_payload(f.read())
+				# encode with base64
+				encoders.encode_base64(mime)
+				# add MIMEBase object to MIMEMultipart object
+				msg.attach(mime)
 		server=smtplib.SMTP_SSL("smtp.qq.com", 465)
 		server.login(self.my_sender, self.my_pass)
 		server.sendmail(self.my_sender,self.receiver_addr,msg.as_string())

@@ -4,7 +4,7 @@
 
 # 主程序入口
 from getInfo import getGegu, getJijin
-from readTxt import GetData
+from readTxt import GetPublicData
 from colorama import init, Fore, Back, Style
 import prettytable as pt
 import time
@@ -29,7 +29,7 @@ class Colored(object):
 
 if __name__ == '__main__':
     while True:
-        d = GetData()
+        d = GetPublicData()
         # 大盘
         # 判断大盘红绿
         def compareDapanNum(s1, s2):

@@ -110,14 +110,16 @@ def get_ma(LSJZList):
     return ma
 
 
-def get_ma_diff_arr(LSJZList_list):
+def get_ma_diff_arr(LSJZList_list, ma=[10,20]):
     diff_bools = []
     index = 0
-    diff_range = len(LSJZList_list[19:])
+    ma_one = ma[0]
+    ma_two = ma[1]
+    diff_range = len(LSJZList_list[ma_two-1:])
     for i in range(0, diff_range):
-        ma_20 = get_ma(LSJZList_list[i: 20+i])
-        ma_10 = get_ma(LSJZList_list[i: 10+i])
-        diff_bools.append(ma_10-ma_20>0)
+        ma_two_value = get_ma(LSJZList_list[i: ma_two+i])
+        ma_one_value = get_ma(LSJZList_list[i: ma_one+i])
+        diff_bools.append(ma_one_value-ma_two_value>0)
     return diff_bools
 
 
@@ -135,4 +137,21 @@ def today_ma(LSJZList_list):
         info = '保持'+str(ma_diff_arr)
     info = info + '净值差' + 'diff' + '比例差' +  str(diff_percent)
     today_ma_info = '今日' 'ma10:' + str(ma_10) + '  ma20:' + str(ma_20) + info  
+    return today_ma_info
+
+
+def today_ma_5(LSJZList_list):
+    ma_5 = get_ma(LSJZList_list[0:5])
+    ma_10 = get_ma(LSJZList_list[0:10])
+    diff = round(ma_5-ma_10,2)
+    diff_percent = round(diff/ma_10, 4)
+    ma_diff_arr = get_ma_diff_arr(LSJZList_list, [5, 10])
+    if all(ma_diff_arr[0:1]) and not any(ma_diff_arr[2:6]):
+        info = '可买'
+    elif not any(ma_diff_arr[0:1]) and  all(ma_diff_arr[2:6]):
+        info = '可卖'
+    else:
+        info = '保持'+str(ma_diff_arr)
+    info = info + '净值差' + 'diff' + '比例差' +  str(diff_percent)
+    today_ma_info = '今日' 'ma5:' + str(ma_5) + '  ma10:' + str(ma_10) + info  
     return today_ma_info
