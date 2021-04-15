@@ -130,9 +130,9 @@ def today_ma(LSJZList_list):
     diff_percent = round(diff/ma_20, 4)
     ma_diff_arr = get_ma_diff_arr(LSJZList_list)
     if all(ma_diff_arr[0:2]) and not any(ma_diff_arr[-2:]):
-        info = '可买'
+        info = '可买'+str(ma_diff_arr)
     elif not any(ma_diff_arr[0:2]) and  all(ma_diff_arr[-2:]):
-        info = '可卖'
+        info = '可卖'+str(ma_diff_arr)
     else:
         info = '保持'+str(ma_diff_arr)
     info = info + '净值差' + 'diff' + '比例差' +  str(diff_percent)
