@@ -52,6 +52,8 @@ def find_ma(ticker):
         time.sleep(5)
         return find_ma(ticker)
     else:
+        if len(hist) <1:
+            return False
         closed_values = []
         for row in hist.iterrows():
             closed_values.append(row[1].get('Close'))
@@ -71,7 +73,14 @@ def find_all_ma():
 
 
 find_all_ma()
+
 # period="1mo"
 
-# ['GOOG', 'GOOGL', 'ISRG', 'ATVI', 'ADSK', 'DXCM', 'FOX', 'BRK.B', 'MDT', 'NEE', 'ORCL', 'NOW', 'SYK', 'ETN', 'ECL', 'AON', 'EW', 'EOG', 'WMB', 'WY', 'CBRE', 'VFC', 'ZBRA', 'OKE', 'IP', 'DRI', 'HES', 'AMCR', 'NVR', 'STX', 'WRK', 'BF.B', 'PWR', 'CMA', 'COG', 'X9USDMORS']
-# 
+## 拿到一个最近25天的单日跌幅排行
+## 持有5天或者盈利5%，止损5%
+## 做一个回归，上面几次交叉之后5个交易日的收益情况。
+## 动态地去获取最新地股票列表
+
+
+#  2021-04-08 ['GOOG', 'GOOGL', 'ISRG', 'ATVI', 'ADSK', 'DXCM', 'FOX', 'BRK.B', 'MDT', 'NEE', 'ORCL', 'NOW', 'SYK', 'ETN', 'ECL', 'AON', 'EW', 'EOG', 'WMB', 'WY', 'CBRE', 'VFC', 'ZBRA', 'OKE', 'IP', 'DRI', 'HES', 'AMCR', 'NVR', 'STX', 'WRK', 'BF.B', 'PWR', 'CMA', 'COG', 'X9USDMORS']
+#   ['CHTR', 'FOXA', 'FOX', 'BRK.B', 'MRK', 'LLY', 'CMI', 'PPL', 'VAR', 'BF.B', 'DVA', 'X9USDMORS']
