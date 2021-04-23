@@ -84,3 +84,18 @@ find_all_ma()
 
 #  2021-04-08 ['GOOG', 'GOOGL', 'ISRG', 'ATVI', 'ADSK', 'DXCM', 'FOX', 'BRK.B', 'MDT', 'NEE', 'ORCL', 'NOW', 'SYK', 'ETN', 'ECL', 'AON', 'EW', 'EOG', 'WMB', 'WY', 'CBRE', 'VFC', 'ZBRA', 'OKE', 'IP', 'DRI', 'HES', 'AMCR', 'NVR', 'STX', 'WRK', 'BF.B', 'PWR', 'CMA', 'COG', 'X9USDMORS']
 #   ['CHTR', 'FOXA', 'FOX', 'BRK.B', 'MRK', 'LLY', 'CMI', 'PPL', 'VAR', 'BF.B', 'DVA', 'X9USDMORS']
+
+
+# 如果盈利概率0.75,亏损概率0.25，盈利平均利润率3%,亏损5%必须离场。
+# 在复利的情况下计算总的利润。
+
+# win_oppo = 0.75
+# loss_oppo = 0.25
+# win_pent = 0.03
+# loss_pent = 0.05
+
+# np.random.seed(0)
+# p = np.array([0.1, 0.0, 0.7, 0.2])
+# index = np.random.choice([0, 1, 2, 3], p = p.ravel())
+
+# np 指定概率
