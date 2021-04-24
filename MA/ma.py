@@ -141,7 +141,7 @@ def write_to_csv(datas):
     with open('filtered_stocks.csv', 'w', newline='',encoding='utf-8') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar=',', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow(['ticker','上次交叉后5天收益', '上次交叉后10天收益','1年平均5天收益','1年平均10天收益','3年平均5天收益','3年平均10天收益'])
+        spamwriter.writerow(['ticker','last five earn', 'last ten earn','one year average five earn','one year average ten earn','three year average five earn','three year average ten earn'])
         for data in datas:
             spamwriter.writerow(data)
 
@@ -206,3 +206,4 @@ def perfect_result():
 
 # 最后生成的数据，ticker , company name , current price, 平均5日后涨幅，平均十日后涨幅，上一次五日后涨幅，上一次十日后涨幅。上一次金叉时间，上一次金叉位置
 
+## 还需要一个五天内最大回撤， 10天内最大回撤这个数据
