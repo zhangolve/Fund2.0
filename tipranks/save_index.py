@@ -10,6 +10,8 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36'
 }
 
+
+
 # https://www.slickcharts.com/sp500 dowjones etf/ark-invest/ARKW
 def save_tickers(index):
     resp = requests.get('https://www.slickcharts.com/'+index, headers=headers)
@@ -26,9 +28,10 @@ def save_tickers(index):
 
 
 def save_all_index():
-    indexs = ['nasdaq100','sp500', 'dowjones', 'etf/ark-invest/ARKW']
-    all_tickers = []
-    all_symbols = []
+    indexs = ['nasdaq100','sp500', 'dowjones', 'etf/ark-invest/ARKW']  
+    custom_ticker = ['QQQ','PSQ','SQQQ', 'BILI', 'BABA', 'NIO','SPY','SPXU','XPEV'] 
+    all_tickers = custom_ticker.copy()
+    all_symbols = custom_ticker.copy()
     for index in indexs:
         tickers, symbols = save_tickers(index)
         all_tickers +=tickers
@@ -37,7 +40,8 @@ def save_all_index():
     df['Ticker'] = all_symbols
     df['ticker_name'] = all_tickers
     df_clean = df.drop_duplicates(subset=['Ticker'])
-    df_clean.to_csv('all_index.csv', index=None)
+    df_clean.to_csv('all_index.csv', index=None, mode='w')
 
 
-save_all_index()
+if __name__ == '__main__':
+    save_all_index()

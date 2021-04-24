@@ -131,7 +131,7 @@ def init():
         for t in existing_ticker_series:
             existing_ticker.append(t)
     for ticker in stocks:
-        if ticker not in existing_ticker:
+        if ticker and ticker not in existing_ticker:
             logger.info('start fech data:')
             logger.info(ticker)
             stock_ticker = []

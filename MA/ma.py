@@ -6,8 +6,16 @@ import yfinance as yf
 import pandas as pd
 from functools import reduce
 import time
+import csv
+
+# from ..tipranks  import save_index
 
 
+
+# 尝试很多解决方法，包括给evaluation_metrics文件夹下添加__init__.py文件，让python能够识别。可是依旧如此。总结了下，后来觉得自己应该是没有在main.py下运行，但是我又不想在造一个main文件，于是把相对路径导入改为顶级目录下的导入，实现很简单：
+
+# from mmt.evaluation_metrics import accuracy
+# 将要导入的方法和需要导入的函数的顶级目录加上就可以了。
 # 回归
 
 
@@ -57,7 +65,8 @@ def find_ma(hist):
     for row in hist.iterrows():
         closed_values.append(row[1].get('Close'))
     ma_diff_arr = get_ma_diff_arr(closed_values)
-    return not any(ma_diff_arr[0:2]) and all(ma_diff_arr[-2:])
+    # 仅仅刚刚过了金叉点,一个交易日或者两个交易日
+    return not any(ma_diff_arr[0:2]) and all(ma_diff_arr[-1:])
 
 
 def find_today_ma(ticker):
@@ -75,19 +84,24 @@ def find_today_ma(ticker):
 def get_diff_of_period(period_hist):
     if len(period_hist) <1:
         return 0
-    first_closed_value = period_hist.iloc[0][3]
-    last_closed_value = period_hist.iloc[-1][3]
+    # 注意是开盘价，不是前一天的收盘价。
+    # - X9USDMORS: No data found, symbol may be delisted
+    # Date  Open   High  Low  close   Volume  Dividends  Stock Splits
+    first_closed_value = period_hist.iloc[0][1]
+    last_closed_value = period_hist.iloc[-1][1]
     return round( (last_closed_value-first_closed_value)/first_closed_value, 4)
 
 
 # 找到历史上的金叉点位
-def find_history_ma(ticker):
+def find_history_ma(ticker, period):
+    current_period  = period or "1y"
     try:
         stock = yf.Ticker(ticker)
-        hist = stock.history(period="1y")
+        hist = stock.history(period=current_period)
+        len(hist)
     except Exception as ex:
         time.sleep(5)
-        return find_history_ma(ticker)
+        return find_history_ma(ticker, current_period)
     else:
         day_five_earn_arr = []
         day_ten_earn_arr = []
@@ -105,9 +119,9 @@ def find_history_ma(ticker):
             average_day_five_earn = get_average_earn_after_gold_point(day_five_earn_arr)
         if len(day_ten_earn_arr) > 0:
             average_day_ten_earn = get_average_earn_after_gold_point(day_ten_earn_arr)
-        print(day_five_earn_arr, day_ten_earn_arr, average_day_five_earn, average_day_ten_earn)
-        return True
-        # return find_ma(hist)
+        last_day_five_earn_arr = day_five_earn_arr[-1] if len(day_five_earn_arr) >0 else ''
+        last_day_ten_earn_arr = day_ten_earn_arr[-1] if len(day_ten_earn_arr) >0 else ''
+        return [str(last_day_five_earn_arr), str(last_day_ten_earn_arr), str(average_day_five_earn), str(average_day_ten_earn)]
 
 
 def find_all_ma():
@@ -115,17 +129,35 @@ def find_all_ma():
     stocks = stock_list['Ticker']
     filtered_stocks = []
     for ticker in stocks:        
-        if find_today_ma(ticker):
+        if ticker and find_today_ma(ticker):
             print(filtered_stocks)
             filtered_stocks.append(ticker)
     return filtered_stocks
 
 
+
+
+def write_to_csv(datas):
+    with open('filtered_stocks.csv', 'w', newline='',encoding='utf-8') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=',',
+                                quotechar=',', quoting=csv.QUOTE_MINIMAL)
+        spamwriter.writerow(['ticker','上次交叉后5天收益', '上次交叉后10天收益','1年平均5天收益','1年平均10天收益','3年平均5天收益','3年平均10天收益'])
+        for data in datas:
+            spamwriter.writerow(data)
+
+
 def find_history_gold_regression():
     # all_ma_ticker = find_all_ma()
-    all_ma_ticker = ['CHTR', 'FOXA', 'FOX', 'MRK', 'LLY', 'CMI', 'PPL', 'VAR', 'BF.B', 'DVA']
+    all_ma_ticker = ['CHTR', 'FOXA', 'FOX', 'MRK', 'LLY', 'STZ', 'CNC', 'PPL', 'CAG', 'LW', 'PRGO', 'COIN']
+    datas = []
     for ticker in all_ma_ticker:
-        find_history_ma(ticker)
+        if ticker: 
+            history_ma_one_year = find_history_ma(ticker,'1y')
+            history_ma_three_year = find_history_ma(ticker,'3y')
+            data = [ticker] + history_ma_one_year + history_ma_three_year[-2:]
+            datas.append(data)
+    write_to_csv(datas)
+
 
 
 find_history_gold_regression()

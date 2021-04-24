@@ -1,0 +1,1 @@
+from tipranks import save_index
