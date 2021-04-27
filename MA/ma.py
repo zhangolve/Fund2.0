@@ -29,7 +29,7 @@ def get_ma(closed_values):
 ## 获取在金叉点位后的平均收益
 def get_average_earn_after_gold_point(earn_after_gold_points):
     sum = reduce(lambda x, y: x+y, earn_after_gold_points) 
-    return round(sum*100/len(earn_after_gold_points), 2)
+    return round(sum/len(earn_after_gold_points), 2)
 
 
 def get_ma_diff_arr(closed_values):
@@ -89,7 +89,7 @@ def get_diff_of_period(period_hist):
     # Date  Open   High  Low  close   Volume  Dividends  Stock Splits
     first_closed_value = period_hist.iloc[0][1]
     last_closed_value = period_hist.iloc[-1][1]
-    return round( (last_closed_value-first_closed_value)/first_closed_value, 4)
+    return round( (last_closed_value-first_closed_value)*100/first_closed_value, 2)
 
 
 # 找到历史上的金叉点位
@@ -115,13 +115,21 @@ def find_history_ma(ticker, period):
                 day_ten_earn_arr.append(day_ten_earn)
         average_day_five_earn=0
         average_day_ten_earn=0
+        min_day_five_earn = 0
+        min_day_ten_earn = 0
+        max_day_five_earn = 0
+        max_day_ten_earn = 0 
         if len(day_five_earn_arr) > 0:
             average_day_five_earn = get_average_earn_after_gold_point(day_five_earn_arr)
+            min_day_five_earn = min(day_five_earn_arr)
+            max_day_five_earn= max(day_five_earn_arr)
         if len(day_ten_earn_arr) > 0:
             average_day_ten_earn = get_average_earn_after_gold_point(day_ten_earn_arr)
-        last_day_five_earn_arr = day_five_earn_arr[-1] if len(day_five_earn_arr) >0 else ''
-        last_day_ten_earn_arr = day_ten_earn_arr[-1] if len(day_ten_earn_arr) >0 else ''
-        return [str(last_day_five_earn_arr), str(last_day_ten_earn_arr), str(average_day_five_earn), str(average_day_ten_earn)]
+            min_day_ten_earn = min(day_ten_earn_arr)
+            max_day_ten_earn= max(day_ten_earn_arr)
+        last_day_five_earn = day_five_earn_arr[-1] if len(day_five_earn_arr) >0 else ''
+        last_day_ten_earn = day_ten_earn_arr[-1] if len(day_ten_earn_arr) >0 else ''
+        return [str(last_day_five_earn), str(last_day_ten_earn), str(average_day_five_earn), str(average_day_ten_earn), min_day_five_earn, max_day_five_earn,min_day_ten_earn, max_day_ten_earn]
 
 
 def find_all_ma():
@@ -141,20 +149,20 @@ def write_to_csv(datas):
     with open('filtered_stocks.csv', 'w', newline='',encoding='utf-8') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar=',', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow(['ticker','last five earn', 'last ten earn','one year average five earn','one year average ten earn','three year average five earn','three year average ten earn'])
+        spamwriter.writerow(['ticker','last five earn', 'last ten earn','one year average five earn','one year average ten earn','one year min five', 'one year max five', 'one year min ten', 'one year max ten','three year average five earn','three year average ten earn',  'three year min five', 'three year max five', 'three year min ten', 'three year max ten'])
         for data in datas:
             spamwriter.writerow(data)
 
 
 def find_history_gold_regression():
-    # all_ma_ticker = find_all_ma()
-    all_ma_ticker = ['CHTR', 'FOXA', 'FOX', 'MRK', 'LLY', 'STZ', 'CNC', 'PPL', 'CAG', 'LW', 'PRGO', 'COIN']
+    all_ma_ticker = find_all_ma()
+    # all_ma_ticker = ['CHTR', 'FOXA', 'FOX', 'MRK', 'LLY', 'STZ', 'CNC', 'PPL', 'CAG', 'LW', 'PRGO', 'COIN']
     datas = []
     for ticker in all_ma_ticker:
         if ticker: 
             history_ma_one_year = find_history_ma(ticker,'1y')
             history_ma_three_year = find_history_ma(ticker,'3y')
-            data = [ticker] + history_ma_one_year + history_ma_three_year[-2:]
+            data = [ticker] + history_ma_one_year + history_ma_three_year[2:]
             datas.append(data)
     write_to_csv(datas)
 
