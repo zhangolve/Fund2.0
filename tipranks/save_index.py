@@ -29,7 +29,7 @@ def save_tickers(index):
 
 def save_all_index():
     indexs = ['nasdaq100','sp500', 'dowjones', 'etf/ark-invest/ARKW']  
-    custom_ticker = ['QQQ','PSQ','SQQQ', 'BILI', 'BABA', 'NIO','SPY','SPXU','XPEV'] 
+    custom_ticker = ['QQQ','PSQ','SQQQ', 'QQQN','BILI', 'BABA', 'NIO','SPY','SPXU','XPEV'] 
     all_tickers = custom_ticker.copy()
     all_symbols = custom_ticker.copy()
     for index in indexs:

@@ -156,7 +156,7 @@ def write_to_csv(datas):
 
 def find_history_gold_regression():
     all_ma_ticker = find_all_ma()
-    # all_ma_ticker = ['CHTR', 'FOXA', 'FOX', 'MRK', 'LLY', 'STZ', 'CNC', 'PPL', 'CAG', 'LW', 'PRGO', 'COIN']
+    # all_ma_ticker = ['ENPH']
     datas = []
     for ticker in all_ma_ticker:
         if ticker: 
