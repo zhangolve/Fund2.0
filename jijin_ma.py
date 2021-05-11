@@ -33,14 +33,14 @@ def is_jijin_buy_opportunity(jjcode, name):
 
 
 
-def write_to_csv():
-    datas = ['001951,金鹰改革红利混合,JYGGHLHH,2021-04-15,2.2920,2.2920,0.61,-0.99,-1.16,-1.50,35.86,105.56,113.01,113.01,4.18,129.20,2015-12-02,1,104.6429,1.50%,0.15%,1,0.15%,1,100.88']
+def write_to_csv(datas):
+    # datas = ['001951,金鹰改革红利混合,JYGGHLHH,2021-04-15,2.2920,2.2920,0.61,-0.99,-1.16,-1.50,35.86,105.56,113.01,113.01,4.18,129.20,2015-12-02,1,104.6429,1.50%,0.15%,1,0.15%,1,100.88']
     with open('filtered_jijin.csv', 'w', newline='',encoding='utf-8') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar=',', quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(['基金代码','基金名称', '','日期','单位净值','累计净值','日增长率','近1周','近1月','近3月','近6月','近1年','近2年','近3年','今年来','成立来'])
         for data in datas:
-            spamwriter.writerow(data.split(','))
+            spamwriter.writerow(data)
 
     								
 def init():
@@ -83,6 +83,6 @@ def init():
     write_to_csv(filtered_data)
     # filter .
 
-# init();
-write_to_csv()
+init();
+# write_to_csv()
 		
