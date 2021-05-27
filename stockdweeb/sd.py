@@ -76,7 +76,7 @@ def init():
         stop = float(single_symbol.get('stop'))
         current_price = get_single_stock_price(symbol)
         if current_price < entry and current_price > stop:
-            single_content = 'symbol:' + symbol + '\n entry price: ' + str(entry) +  '\n current price: ' + str(current_price) + '\n'
+            single_content = 'symbol:' + symbol + '\n entry price: ' + str(entry) +  '\n current price: ' + str(current_price) + '\n stop price:' + str(stop) + '\n' 
             content += single_content
     if len(content) > 0 :
         my_sender = '1262010981@qq.com'
