@@ -16,26 +16,49 @@ headers = {
 
 data_path = 'data.txt'
 
-def save_json():
-    resp = requests.get(' https://stockdweebs.com/pick_categories/weekly-picks/', headers=headers)
-    soup = bs.BeautifulSoup(resp.text, 'html.parser')
-    table = soup.find('div', {'class': 'archive-feed-pick'})
-    symbols = []
-    for row in table.findAll('article'):
-        symbol = row.get('data-stock-symbol')
-        buy_zones_parent = row.findAll('span', {'class','data-value'})[-2]
-        buy_zones =  buy_zones_parent.findAll('span', {'class','buy-zone'})
-        entry = buy_zones[0].text[1:]
-        stop = buy_zones[-1].text[1:]
-        single_symbol = dict(entry=entry, symbol=symbol, stop=stop)
-        symbols.append(single_symbol)
-    
-    now = datetime.datetime.now()
-    time = now.strftime("%Y-%m-%d %H:%M:%S")
-    symbols_json = dict(symbols=symbols, time=time)
-    fo = open(data_path, "w")
-    json.dump(symbols_json, fo)
-    fo.close()
+failed_times = 0
+max_failed_times= 3
+
+
+## mail info
+my_sender = '1262010981@qq.com'
+my_pass = 'nrrejsviolzpjchd'
+receiver_addr = ['zhangolve@gmail.com']
+sender_name = 'StockDweebs'
+now = datetime.datetime.now()
+subject = 'stock dweeb pickup ' + now.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def save_json():   
+    try:
+        resp = requests.get('https://stockdweebs.com/pick_categories/weekly-picks/', headers=headers)           
+        soup = bs.BeautifulSoup(resp.text, 'html.parser')
+        table = soup.find('div', {'class': 'archive-feed-pick'})
+        symbols = []
+        for row in table.findAll('article'):
+            symbol = row.get('data-stock-symbol')
+            buy_zones_parent = row.findAll('span', {'class','data-value'})[-2]
+            buy_zones =  buy_zones_parent.findAll('span', {'class','buy-zone'})
+            entry = buy_zones[0].text[1:]
+            stop = buy_zones[-1].text[1:]
+            single_symbol = dict(entry=entry, symbol=symbol, stop=stop)
+            symbols.append(single_symbol)
+        
+        now = datetime.datetime.now()
+        time = now.strftime("%Y-%m-%d %H:%M:%S")
+        symbols_json = dict(symbols=symbols, time=time)
+        fo = open(data_path, "w")
+        json.dump(symbols_json, fo)
+        fo.close()
+    except Exception as ex:
+        global failed_times
+        failed_times +=1
+        if failed_times > max_failed_times:
+            content = "EXCEPTION FORMAT PRINT:\n{}".format(ex)
+            mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, None)
+            mailsender.send_it()
+        else:
+            save_json()
 
 
 def get_single_stock_price(ticker):
@@ -79,12 +102,6 @@ def init():
             single_content = 'symbol:' + symbol + '\n entry price: ' + str(entry) +  '\n current price: ' + str(current_price) + '\n stop price:' + str(stop) + '\n' 
             content += single_content
     if len(content) > 0 :
-        my_sender = '1262010981@qq.com'
-        my_pass = 'nrrejsviolzpjchd'
-        receiver_addr = ['zhangolve@gmail.com']
-        sender_name = 'StockDweebs'
-        now = datetime.datetime.now()
-        subject = 'stock dweeb pickup ' + now.strftime("%Y-%m-%d %H:%M:%S")
         mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, None)
         mailsender.send_it()
 
