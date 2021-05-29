@@ -68,6 +68,7 @@ def get_single_stock_price(ticker):
         return float(current_price)
     except Exception as ex:
         time.sleep(5)
+        print(ex)
         return get_single_stock_price(ticker)
 
 
@@ -88,6 +89,13 @@ def load_json():
         else:
             symbols = data.get('symbols')
             return symbols
+
+
+# https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers?tickers=STLD,EQR,ADM,VMW,IBM,BGFV,CROX,DISH,RBLX,FCX,SPY&apiKey=b1i5IanrlvBLGCAUDGhGepd924yDRXuX
+# 87JHdFHMBgtgmldFUQMN1qHeyxNw5UpN
+# 甲骨文。。。 
+#yahoo finance　被墙了
+
 
 
 def init():
