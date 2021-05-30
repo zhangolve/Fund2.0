@@ -61,15 +61,36 @@ def save_json():
             save_json()
 
 
+# def get_single_stock_price(ticker):
+#     try:
+#         stock = yf.Ticker(ticker)
+#         current_price = stock.info['regularMarketPrice']
+#         return float(current_price)
+#     except Exception as ex:
+#         time.sleep(5)
+#         print(ex)
+#         return get_single_stock_price(ticker)
+
+
 def get_single_stock_price(ticker):
     try:
-        stock = yf.Ticker(ticker)
-        current_price = stock.info['regularMarketPrice']
-        return float(current_price)
+        base_url = 'https://api.polygon.io/v2/aggs/ticker/'+ticker + '/prev?unadjusted=true&apiKey='
+        apiKey = '87JHdFHMBgtgmldFUQMN1qHeyxNw5UpN'
+        url = base_url+apiKey
+        resp = requests.get(url)
+        status = resp.status_code
+        if status != 200:
+            content = "polygon 异常"
+            mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, None)
+            mailsender.send_it()
+        else:
+            resp_json = json.loads(resp.text)
+            return float(resp_json.get('results')[0].get('c'))
     except Exception as ex:
         time.sleep(5)
         print(ex)
         return get_single_stock_price(ticker)
+
 
 
 def load_json():
@@ -97,7 +118,7 @@ def load_json():
 #yahoo finance　被墙了
 
 
-
+ 
 def init():
     symbols = load_json()
     content = ''
