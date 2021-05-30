@@ -94,11 +94,12 @@ def get_single_stock_price(ticker):
 
 
 def load_json():
-    if datetime.datetime.today().weekday() ==1:
+    # if datetime.datetime.today().weekday() ==1:
         # 周二刷新
-        save_json()
-    if not os.path.exists(data_path):
-        save_json()
+        # save_json()
+    # if not os.path.exists(data_path):
+    save_json()
+    # 每天都去刷新,获取数据是最新的
     with open(data_path) as json_file:
         data = json.load(json_file)
         time = data.get('time')
