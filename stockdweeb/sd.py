@@ -79,8 +79,12 @@ def get_single_stock_price(ticker):
         url = base_url+apiKey
         resp = requests.get(url)
         status = resp.status_code
+        print(status, resp)
+        if status == 429:
+            time.sleep(60)
+            return get_single_stock_price(ticker)
         if status != 200:
-            content = "polygon 异常"
+            content = "polygon 异常"+status
             mailsender=MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content, None)
             mailsender.send_it()
         else:
