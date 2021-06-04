@@ -74,10 +74,16 @@ def save_json():
 
 def get_single_stock_price(ticker):
     try:
-        base_url = 'https://api.polygon.io/v2/aggs/ticker/'+ticker + '/prev?unadjusted=true&apiKey='
-        apiKey = '87JHdFHMBgtgmldFUQMN1qHeyxNw5UpN'
+        stockdweebs_headers = {
+            'origin': 'https://stockdweebs.com',
+            'referer': 'https://stockdweebs.com/'
+        }
+        # base_url = 'https://api.polygon.io/v2/aggs/ticker/'+ticker + '/prev?unadjusted=true&apiKey='
+        base_url = 'https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/'+ticker + '?&apiKey='
+        # apiKey = '87JHdFHMBgtgmldFUQMN1qHeyxNw5UpN'
+        apiKey = 'b1i5IanrlvBLGCAUDGhGepd924yDRXuX'
         url = base_url+apiKey
-        resp = requests.get(url)
+        resp = requests.get(url, headers=stockdweebs_headers)
         status = resp.status_code
         print(status, resp)
         if status == 429:
@@ -89,7 +95,8 @@ def get_single_stock_price(ticker):
             mailsender.send_it()
         else:
             resp_json = json.loads(resp.text)
-            return float(resp_json.get('results')[0].get('c'))
+            return float(resp_json.get('ticker').get('day').get('c'))
+            # return float(resp_json.get('results')[0].get('c'))
     except Exception as ex:
         time.sleep(5)
         print(ex)
