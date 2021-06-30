@@ -85,7 +85,7 @@ def get_one_stock_data(ticker):
 def get_curr_price(ticker):
     timestamp = get_now_timestamp()
     url = 'https://market.tipranks.com/api/details/getstockdetailsasync/?break='+timestamp + '&id='+ticker
-    ticker_detail_json = requests.get(url, timeout=(5, 27))
+    ticker_detail_json = requests.get(url, timeout=(10, 27))
     status = ticker_detail_json.status_code
     if status != 200:
         logger.error(ticker_detail_json)
@@ -113,7 +113,10 @@ def get_target_price(ticker):
         low = result.get('low')
         priceTarget = result.get('priceTarget')
     latestRankedConsensus = stock_data.get('latestRankedConsensus')
-    num_analyst = latestRankedConsensus.get('nB') + latestRankedConsensus.get('nH')+ latestRankedConsensus.get('nS')
+    if latestRankedConsensus:
+        num_analyst = latestRankedConsensus.get('nB') + latestRankedConsensus.get('nH')+ latestRankedConsensus.get('nS')
+    else:
+        num_analyst = 0
     return [companyName, high, low, priceTarget, num_analyst]
     # loop all ,get detail
 
@@ -131,8 +134,9 @@ def init():
         for t in existing_ticker_series:
             existing_ticker.append(t)
     for ticker in stocks:
-        if ticker and ticker not in existing_ticker:
+        if isinstance(ticker,str) and ticker not in existing_ticker:
             logger.info('start fech data:')
+            logger.info('ticker')
             logger.info(ticker)
             stock_ticker = []
             stock_name = []
