@@ -7,24 +7,37 @@
             click search
         </button>
         {{ticker}}
+        <div v-if="data">
+            <Result :data={data}></Result>
+        </div>
 </template>
 
 <script>
 
+import axios from 'axios';
+import Result from './Result.vue';
+
 export default {
     name: 'Search',
+    components: Result,
     data() {
         return {
             ticker: '',
-            test: 'abc'
+            data: null
         }
     },
     methods: {
         onSearch() {
-            console.log(this)
-            console.log(this.ticker)
-            console.log(this.test)
-            console.log('console');
+            const timestamp = +new Date()
+            const url = '/api/stocks/getData/?name='+this.ticker+'&benchmark=1&period=3&break='+timestamp
+            axios.get(url)
+            .then((res)=>{
+                console.log(res);
+                this.data = res.data;
+            })
+            .then((error)=>{
+                console.log(error);
+            })
         }
     }
 }
