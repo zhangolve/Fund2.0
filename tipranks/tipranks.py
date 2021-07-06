@@ -205,3 +205,5 @@ def exec():
         mailsender.send_it()
 
 exec()
+
+# print(get_one_stock_data('ALK'))
