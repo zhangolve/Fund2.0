@@ -10,7 +10,7 @@
                 />   
             </a-col>
         </a-row>
-        <div v-if="data">
+        <div v-if="data && !loading">
             <Result :data="data"></Result>
         </div>
         <div v-if="loading">
