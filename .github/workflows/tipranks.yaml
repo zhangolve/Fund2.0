@@ -30,7 +30,7 @@ jobs:
         with:
           tags: zhangolve/ranks:latest
           context: ./tipranks/advanced
-          file: Dockerfile
+          file: ./tipranks/advanced/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
       -
