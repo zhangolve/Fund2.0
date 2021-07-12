@@ -1,15 +1,15 @@
 <template>
     <div v-if="data">
-     <a-row type="flex" justify="center">
-            <a-col :span="12">
+     <a-row type="flex" justify="center" >
+            <a-col :xs="24" :lg="12">
                 <a-descriptions title="User Info" bordered>
                     <a-descriptions-item label="Ticker">{{data.ticker}}</a-descriptions-item>
                     <a-descriptions-item label="companyName">{{data.companyName}}</a-descriptions-item>
                 </a-descriptions>
             </a-col>
-        </a-row>
-     <a-row type="flex" justify="center">
-        <a-col :span="24" v-for="item in data.ptConsensus" :key="item">
+    </a-row>
+     <a-row type="flex" justify="center" v-for="item in data.ptConsensus" :key="item">
+        <a-col :xs="24" :lg="12">
                     <a-descriptions  bordered>
                     <a-descriptions-item label="target">{{item.priceTarget}}</a-descriptions-item>
                     <a-descriptions-item label="high">{{item.high}}</a-descriptions-item>
@@ -17,10 +17,9 @@
                     </a-descriptions>
         </a-col>
         </a-row>
-
          <a-row type="flex" justify="center">
               
-        <a-col :span="12">
+        <a-col :xs="24" :lg="12">
             <History :dataSource="data.consensusOverTime"/>
         </a-col>
         </a-row>

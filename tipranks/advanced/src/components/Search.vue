@@ -1,6 +1,6 @@
 <template>
         <a-row type="flex" justify="center">
-            <a-col :span="12">
+            <a-col :xs="20" :lg="12">
                 <a-input-search
                     v-model:value="ticker"
                     placeholder="input search ticker"
